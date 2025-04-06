@@ -3,10 +3,14 @@
 ## 1. 개요
 
 - 클라이언트와 서버 간의 원격 프로시저 호출(RPC) 구현
-- Worker on Docker 에서의 컴파일 및 실행
+- Worker on Docker
 
 ## 2. 사용법
+rustc 1.86.0에서 동작합니다.
 
+- protopuf 설치
+  - apt-get install protobuf-compiler
+  - brew install protobuf
 - docker-compose up
 - cargo build
 - cargo run --bin server

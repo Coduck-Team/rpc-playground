@@ -7,7 +7,7 @@ service Executor {
 }
 
 message CodeRequest {
-  string filename = 1;
+  string exec_lang = 1;
   string code = 2;
 }
 

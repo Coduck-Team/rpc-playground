@@ -12,8 +12,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let stdin = std::io::stdin();
 
-    println!("💬 파일명을 입력하세요 (예: a.cpp, b.py):");
-    let filename: String = stdin.lock().lines().next().unwrap().unwrap();
+    println!("💬 언어를 입력하세요 [c99, c++17, c++20, java8, python3, pypy]:");
+    let exec_lang: String = stdin.lock().lines().next().unwrap().unwrap();
 
     println!("💬 코드를 입력하세요 (입력 완료 후 Enter):");
     let mut lines = Vec::new();
@@ -29,7 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let code = lines.join("\n");
 
     let request = tonic::Request::new(CodeRequest {
-        filename: filename.to_string(),
+        exec_lang: exec_lang.to_string(),
         code: code.to_string(),
     });
 

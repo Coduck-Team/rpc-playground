@@ -1,0 +1,9 @@
+services:
+  cpp-python-worker:
+    image: cpp-python-worker
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    volumes:
+      - ./shared:/app/shared
+    entrypoint: [ "/bin/bash", "-c", "tail -f /dev/null" ]

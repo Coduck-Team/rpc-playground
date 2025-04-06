@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package code_executor;
+
+service Executor {
+  rpc Execute (CodeRequest) returns (CodeReply);
+}
+
+message CodeRequest {
+  string filename = 1;
+  string code = 2;
+}
+
+message CodeReply {
+  string result = 1;
+}

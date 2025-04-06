@@ -1,7 +1,7 @@
 use code_executor::executor_server::{Executor, ExecutorServer};
 use code_executor::{CodeReply, CodeRequest};
-use std::fs;
 use std::process::Command;
+use std::{env, fs};
 use tonic::{transport::Server, Request, Response, Status};
 
 pub mod code_executor {
@@ -29,8 +29,12 @@ impl Executor for MyExecutor {
             }
         };
 
-        let finename = format!("Main.{}", ext);
-        let path = format!("./shared/{}", finename);
+        let current_dir = env::current_dir()?;
+        let abs_path = current_dir.join("shared").to_str().unwrap().to_string();
+        let volume_arg = format!("{}:/app/shared", abs_path);
+
+        let filename = format!("Main.{}", ext);
+        let path = format!("{}{}", abs_path, filename);
         fs::write(&path, &req.code)
             .map_err(|e| Status::internal(format!("파일 저장 실패: {}", e)))?;
 
@@ -39,7 +43,7 @@ impl Executor for MyExecutor {
                 "run",
                 "--rm",
                 "-v",
-                "./shared:/app/shared",
+                &volume_arg,
                 "cpp-python-worker",
                 &req.exec_lang,
             ])

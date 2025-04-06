@@ -8,7 +8,7 @@
 ## 2. 사용법
 rustc 1.86.0에서 동작합니다.
 
-- protopuf 설치
+- protobuf 설치
   - apt-get install protobuf-compiler
   - brew install protobuf
 - docker-compose up

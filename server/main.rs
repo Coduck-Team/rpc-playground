@@ -29,8 +29,11 @@ impl Executor for MyExecutor {
             }
         };
 
-        let current_dir = env::current_dir()?;
-        let abs_path = current_dir.join("shared").to_str().unwrap().to_string();
+        let abs_path = env::current_dir()?
+            .join("shared")
+            .to_str()
+            .unwrap()
+            .to_string();
         let volume_arg = format!("{}:/app/shared", abs_path);
 
         let filename = format!("Main.{}", ext);
@@ -38,28 +41,34 @@ impl Executor for MyExecutor {
         fs::write(&path, &req.code)
             .map_err(|e| Status::internal(format!("파일 저장 실패: {}", e)))?;
 
-        let output = Command::new("docker")
-            .args([
-                "run",
-                "--rm",
-                "-v",
-                &volume_arg,
-                "cpp-python-worker",
-                &req.exec_lang,
-            ])
-            .output()
-            .map_err(|e| Status::internal(format!("Docker 실행 실패: {}", e)))?;
+        let output = output(volume_arg, req.exec_lang)
+            .map_err(|e| Status::internal(format!("Worker 실행 실패: {}", e)))?;
+        println!("📦 실행 결과:\n{}", output);
 
-        if !output.status.success() {
-            return Err(Status::internal(
-                String::from_utf8_lossy(&output.stderr).to_string(),
-            ));
-        }
-
-        Ok(Response::new(CodeReply {
-            result: String::from_utf8_lossy(&output.stdout).to_string(),
-        }))
+        Ok(Response::new(CodeReply { result: output }))
     }
+}
+
+fn output(volume_arg: String, exec_lang: String) -> Result<String, Status> {
+    let output = Command::new("docker")
+        .args([
+            "run",
+            "--rm",
+            "-v",
+            &volume_arg,
+            "cpp-python-worker",
+            &exec_lang,
+        ])
+        .output()
+        .map_err(|e| Status::internal(format!("Docker 실행 실패: {}", e)))?;
+
+    if !output.status.success() {
+        return Err(Status::internal(
+            String::from_utf8_lossy(&output.stderr).to_string(),
+        ));
+    }
+
+    Ok(String::from_utf8_lossy(&output.stdout).to_string())
 }
 
 #[tokio::main]

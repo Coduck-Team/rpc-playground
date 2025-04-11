@@ -18,6 +18,7 @@ impl Executor for MyExecutor {
 
         println!("📦 입력된 언어: {}", req.exec_lang);
         println!("📦 입력된 코드:\n{}", req.code);
+        println!("📦 입력된 옵션: {}", req.option);
 
         let ext = match req.exec_lang.as_str() {
             "c99" => "c",
@@ -29,27 +30,41 @@ impl Executor for MyExecutor {
             }
         };
 
-        let abs_path = env::current_dir()?
+        let cur_dir_path = env::current_dir()?
             .join("shared")
             .to_str()
             .unwrap()
             .to_string();
-        let volume_arg = format!("{}:/app/shared", abs_path);
 
-        let filename = format!("Main.{}", ext);
-        let path = format!("{}/{}", abs_path, filename);
-        fs::write(&path, &req.code)
+        // shared 디렉토리에 사용자의 소스코드를 Main.<ext>로 저장
+        let cur_file_path = format!("{}/{}", cur_dir_path, format!("Main.{}", ext));
+        fs::write(&cur_file_path, &req.code)
             .map_err(|e| Status::internal(format!("파일 저장 실패: {}", e)))?;
 
-        let output = output(volume_arg, req.exec_lang)
-            .map_err(|e| Status::internal(format!("Worker 실행 실패: {}", e)))?;
-        println!("📦 실행 결과:\n{}", output);
+        let volume_arg = format!("{}:/app/shared", cur_dir_path);
 
-        Ok(Response::new(CodeReply { result: output }))
+        match req.option {
+            0 => {
+                println!("📦 실행 중...");
+                let output = exec_without_input(volume_arg, req.exec_lang)
+                    .map_err(|e| Status::internal(format!("Worker 실행 실패: {}", e)))?;
+
+                println!("📦 실행 결과:\n{}", output);
+
+                Ok(Response::new(CodeReply { result: output }))
+            }
+            1 => {
+                println!("📦 채점 중...");
+                Ok(Response::new(CodeReply {
+                    result: String::from("채점 결과"),
+                }))
+            }
+            _ => Err(Status::invalid_argument("지원하지 않는 옵션입니다.")),
+        }
     }
 }
 
-fn output(volume_arg: String, exec_lang: String) -> Result<String, Status> {
+fn exec_without_input(volume_arg: String, exec_lang: String) -> Result<String, Status> {
     let output = Command::new("docker")
         .args([
             "run",

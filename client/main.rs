@@ -28,14 +28,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let code = lines.join("\n");
 
+    println!("⚙️ 실행 옵션을 입력하세요 [0: 입력 없이 실행, 1: 채점]");
+    let option: u32 = stdin
+        .lock()
+        .lines()
+        .next()
+        .unwrap()
+        .unwrap()
+        .parse()
+        .unwrap();
+
     let request = tonic::Request::new(CodeRequest {
-        exec_lang: exec_lang.to_string(),
-        code: code.to_string(),
+        exec_lang,
+        code,
+        option,
     });
 
     let response = client.execute(request).await?;
 
-    println!("실행 결과:\n{}", response.into_inner().result);
+    println!("\n실행 결과:\n{}", response.into_inner().result);
 
     Ok(())
 }

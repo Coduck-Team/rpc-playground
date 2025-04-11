@@ -9,6 +9,7 @@ service Executor {
 message CodeRequest {
   string exec_lang = 1;
   string code = 2;
+  uint32 option = 3;
 }
 
 message CodeReply {

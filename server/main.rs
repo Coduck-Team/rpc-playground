@@ -43,17 +43,18 @@ impl Executor for MyExecutor {
 
         let volume_arg = format!("{}:/app/shared", cur_dir_path);
 
-        match req.option {
-            0 => {
+        // [run, judge] 옵션에 따라 실행
+        match req.option.as_str() {
+            "run" => {
                 println!("📦 실행 중...");
-                let output = exec_without_input(volume_arg, req.exec_lang)
-                    .map_err(|e| Status::internal(format!("Worker 실행 실패: {}", e)))?;
+                let output = exec(volume_arg, req.exec_lang, None, None)
+                    .map_err(|e| Status::internal(format!("실행 실패: {}", e)))?;
 
                 println!("📦 실행 결과:\n{}", output);
 
                 Ok(Response::new(CodeReply { result: output }))
             }
-            1 => {
+            "judge" => {
                 println!("📦 채점 중...");
                 Ok(Response::new(CodeReply {
                     result: String::from("채점 결과"),
@@ -64,9 +65,31 @@ impl Executor for MyExecutor {
     }
 }
 
-fn exec_without_input(volume_arg: String, exec_lang: String) -> Result<String, Status> {
+fn exec(
+    volume_arg: String,
+    exec_lang: String,
+    input_file: Option<String>,
+    output_file: Option<String>,
+) -> Result<String, Status> {
+    let lang_arg = format!("--lang={}", exec_lang);
+    let input_arg = input_file
+        .map(|file| format!("--input={}", file))
+        .unwrap_or_default();
+    let output_arg = output_file
+        .map(|file| format!("--output={}", file))
+        .unwrap_or_default();
+
+    let mut args = vec!["run", "--rm", "-v", &volume_arg, "worker", &lang_arg];
+    if !input_arg.is_empty() {
+        args.push(&input_arg);
+    }
+    if !output_arg.is_empty() {
+        args.push(&output_arg);
+    }
+
+    println!("📦 Docker args: {:?}", args);
     let output = Command::new("docker")
-        .args(["run", "--rm", "-v", &volume_arg, "worker", &exec_lang])
+        .args(args)
         .output()
         .map_err(|e| Status::internal(format!("Docker 실행 실패: {}", e)))?;
 

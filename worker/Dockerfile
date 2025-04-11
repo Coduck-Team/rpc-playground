@@ -5,7 +5,9 @@ RUN apt-get update && \
     apt-get clean
 
 WORKDIR /app
-COPY run_worker.sh /app/
-RUN chmod +x /app/run_worker.sh
+COPY compile.sh /app/
+COPY run.sh /app/
+COPY checker.sh /app/
+COPY generator.sh /app/
+RUN chmod +x /app/*.sh
 
-ENTRYPOINT ["/app/run_worker.sh"]

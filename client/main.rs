@@ -13,7 +13,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let stdin = std::io::stdin();
 
     println!("💬 언어를 입력하세요 [c99, c++17, c++20, java8, python3, pypy]:");
-    let exec_lang: String = stdin.lock().lines().next().unwrap().unwrap();
+    let language: String = stdin.lock().lines().next().unwrap().unwrap();
 
     println!("💬 코드를 입력하세요 (입력 완료 후 Enter):");
     let mut lines = Vec::new();
@@ -26,7 +26,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         lines.push(line);
     }
-    let code = lines.join("\n");
+    let source_code = lines.join("\n");
 
     println!("⚙️ 실행 옵션을 입력하세요 [run, judge]:");
     let option: String = stdin.lock().lines().next().unwrap().unwrap();
@@ -36,8 +36,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let request = tonic::Request::new(CodeRequest {
-        exec_lang,
-        code,
+        language,
+        source_code,
         option,
     });
 

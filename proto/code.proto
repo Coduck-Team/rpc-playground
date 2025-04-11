@@ -7,8 +7,9 @@ service Executor {
 }
 
 message CodeRequest {
-  string exec_lang = 1;
-  string code = 2;
+  string language = 1;
+  string source_code = 2;
+  string option = 3;
 }
 
 message CodeReply {

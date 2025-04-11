@@ -1,6 +1,6 @@
 services:
-  cpp-python-worker:
-    image: cpp-python-worker
+  worker:
+    image: worker
     build:
       context: ./worker
       dockerfile: Dockerfile

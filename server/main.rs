@@ -66,14 +66,7 @@ impl Executor for MyExecutor {
 
 fn exec_without_input(volume_arg: String, exec_lang: String) -> Result<String, Status> {
     let output = Command::new("docker")
-        .args([
-            "run",
-            "--rm",
-            "-v",
-            &volume_arg,
-            "cpp-python-worker",
-            &exec_lang,
-        ])
+        .args(["run", "--rm", "-v", &volume_arg, "worker", &exec_lang])
         .output()
         .map_err(|e| Status::internal(format!("Docker 실행 실패: {}", e)))?;
 

@@ -5537,7 +5537,6 @@ size_t getOptType(char *s) {
  *          0 if there is no arguments to parse.
  * 
  * Algorithm details:
- * TODO. Please refer to the implementation to see how the code handles the 3rd and 4th forms separately.
  */
 size_t parseOpt(size_t argc, char *argv[], size_t index, std::map<std::string, TestlibOpt> &opts) {
     if (index >= argc)

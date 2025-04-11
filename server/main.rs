@@ -34,7 +34,7 @@ impl Executor for MyExecutor {
         let volume_arg = format!("{}:/app/shared", abs_path);
 
         let filename = format!("Main.{}", ext);
-        let path = format!("{}{}", abs_path, filename);
+        let path = format!("{}/{}", abs_path, filename);
         fs::write(&path, &req.code)
             .map_err(|e| Status::internal(format!("파일 저장 실패: {}", e)))?;
 

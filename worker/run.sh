@@ -20,10 +20,6 @@ for arg in "$@"; do
       OUTPUT_FILE="${arg#*=}"
       shift
       ;;
-    --ANSWER_FILE=*)
-      ANSWER_FILE="${arg#*=}"
-      shift
-      ;;
     *)
       echo "Unknown option: $arg"
       ;;
@@ -43,13 +39,13 @@ case "$LANGUAGE" in
     RUN_CMD="./$EXECUTABLE"
     ;;
   "java8")
-    RUN_CMD="java -Xms1024m -Xmx1920m -Xss512m -Dfile.encoding=UTF-8 ./$EXECUTABLE"
+    RUN_CMD="java -Xms1024m -Xmx1920m -Xss512m -Dfile.encoding=UTF-8 $EXECUTABLE"
     ;;
   "python3")
-    RUN_CMD="python3 -W ignore ./$EXECUTABLE.py"
+    RUN_CMD="python3 -W ignore $EXECUTABLE.py"
     ;;
   "pypy")
-    RUN_CMD="pypy3 -W ignore ./$EXECUTABLE.py"
+    RUN_CMD="pypy3 -W ignore $EXECUTABLE.py"
     ;;
   *)
     echo "지원하지 않는 언어: $LANGUAGE"

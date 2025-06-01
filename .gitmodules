@@ -1,0 +1,3 @@
+[submodule "grader-docker"]
+	path = grader-docker
+	url = https://github.com/Coduck-Team/grader-docker

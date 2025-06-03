@@ -12,7 +12,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let stdin = std::io::stdin();
 
-    println!("💬 언어를 입력하세요 [c99, c++17, c++20, java8, python3, pypy]:");
+    println!("💬 언어를 입력하세요 [c99, c++17, c++20, java8, python3, pypy3]:");
     let language: String = stdin.lock().lines().next().unwrap().unwrap();
 
     println!("💬 코드를 입력하세요 (입력 완료 후 Enter):");

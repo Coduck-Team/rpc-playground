@@ -24,7 +24,6 @@ impl Executor for MyExecutor {
         let ext = match req.language.as_str() {
             "c99" => "c",
             "c++17" | "c++20" => "cc",
-            "java8" => "java",
             "python3" | "pypy3" => "py",
             _ => {
                 return Err(Status::invalid_argument("지원하지 않는 언어입니다."));
@@ -249,15 +248,6 @@ async fn compile_on_docker(language: String, source_file: &str) -> Result<String
             "-static",
             "-std=gnu++20",
         ],
-        "java8" => vec![
-            "/usr/bin/javac",
-            "-J-Xms1024m",
-            "-J-Xmx1920m",
-            "-J-Xss512m",
-            "-encoding",
-            "UTF-8",
-            source_file,
-        ],
         "python3" => vec!["/usr/bin/python3", "-W", "ignore", "-c", &python_temp],
         "pypy3" => vec!["/usr/bin/pypy3", "-W", "ignore", "-c", &python_temp],
         _ => {
@@ -292,14 +282,6 @@ async fn execute_on_docker(language: String, executable: &str) -> Result<String,
 
     let command = match language.as_str() {
         "c99" | "c++17" | "c++20" => vec![executable],
-        "java8" => vec![
-            "/usr/bin/java",
-            "-Xms1024m",
-            "-Xmx1920m",
-            "-Xss512m",
-            "-Dfile.encoding=UTF-8",
-            executable,
-        ],
         "python3" => vec!["/usr/bin/python3", executable],
         "pypy3" => vec!["/usr/bin/pypy3", executable],
         _ => {
